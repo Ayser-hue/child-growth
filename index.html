@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="نمو الطفل" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#1D9E75" />
+<meta name="description" content="تطبيق متابعة نمو الطفل وفق معايير منظمة الصحة العالمية WHO" />
 <title>متابعة نمو الطفل — WHO</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -707,6 +715,53 @@ function resetForm() {
   document.getElementById('iHt').value   = '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+</script>
+
+<!-- PWA Install Banner -->
+<div id="installBanner" style="display:none;position:fixed;bottom:0;right:0;left:0;z-index:100;
+  background:#1D9E75;color:white;padding:14px 16px;align-items:center;gap:12px;
+  box-shadow:0 -2px 12px rgba(0,0,0,0.15);">
+  <span style="font-size:24px">📲</span>
+  <div style="flex:1">
+    <div style="font-size:14px;font-weight:700;margin-bottom:2px">ثبّت التطبيق على جوالك!</div>
+    <div style="font-size:12px;opacity:.9">يعمل بدون إنترنت بعد التثبيت</div>
+  </div>
+  <button onclick="installApp()" style="background:white;color:#1D9E75;border:none;
+    border-radius:8px;padding:8px 16px;font-family:Cairo,sans-serif;font-size:13px;
+    font-weight:700;cursor:pointer;">ثبّت الآن</button>
+  <button onclick="document.getElementById('installBanner').style.display='none'"
+    style="background:transparent;border:none;color:white;font-size:20px;cursor:pointer;
+    padding:0 4px;">✕</button>
+</div>
+<script>
+// ── Register Service Worker ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+// ── Install prompt banner ──
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('installBanner').style.display = 'none';
+    });
+  }
+}
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBanner').style.display = 'none';
+});
 </script>
 </body>
 </html>
